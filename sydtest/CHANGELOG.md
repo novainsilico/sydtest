@@ -23,7 +23,8 @@ This does not change the usual API (`shouldBe` or `GoldenTest`), but some intern
 - The `Assertion` `NotEqualButShouldHaveBeenEqual` is removed and replaced by `NotEqualButShouldHaveBeenEqualWithDiff` which embed the difference between both values.
 - the record field `goldenTestCompare` of `GoldenTest` changed from `a -> a ->
   Maybe Assertion` to `a -> a -> IO (Maybe Assertion)`.
-
+- sydtest won't crash anymore or behave weirdly or leak ressource in repl when
+  interrupted by ctrl-C. See discussion here: https://github.com/NorfairKing/sydtest/issues/80#issuecomment-2286517212
 
 ## [0.17.0.0] - 2024-08-04
 
