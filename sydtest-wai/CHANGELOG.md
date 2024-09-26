@@ -1,5 +1,9 @@
 # Changelog
 
+### Added
+
+- Added `ISTest` instances for `WaiClientM env (GoldenTest a)`.
+
 ## [0.2.0.1] - 2023-10-09
 
 ### Added
