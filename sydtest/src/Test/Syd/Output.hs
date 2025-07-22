@@ -34,6 +34,7 @@ import Test.Syd.SpecDef
 import Test.Syd.SpecForest
 import Text.Colour
 import Text.Printf
+import Control.Exception.Context (displayExceptionContext)
 
 printOutputSpecForest :: Settings -> Timed ResultForest -> IO ()
 printOutputSpecForest settings results = do
@@ -405,12 +406,14 @@ outputFailures settings rf =
 
 outputSomeException :: SomeException -> [[Chunk]]
 outputSomeException outerException =
-  case fromException outerException :: Maybe Contextual of
-    Just (Contextual innerException s) -> outputSomeException (SomeException innerException) ++ stringChunks s
+  case fromException outerException :: Maybe (ExceptionWithContext Contextual) of
+    Just (ExceptionWithContext ctx (Contextual innerException s)) -> outputSomeException (SomeException innerException) ++ stringChunks s ++ stringChunks (displayExceptionContext ctx)
     Nothing ->
-      case fromException outerException :: Maybe Assertion of
-        Just a -> outputAssertion a
-        Nothing -> stringChunks $ displayException outerException
+      case fromException outerException :: Maybe (ExceptionWithContext Assertion) of
+        Just (ExceptionWithContext ctx a) -> outputAssertion a ++ stringChunks (displayExceptionContext ctx)
+        Nothing -> case fromException outerException :: Maybe (ExceptionWithContext SomeException) of
+           Just (ExceptionWithContext ctx e) -> stringChunks (displayException outerException)  ++ stringChunks (displayExceptionContext ctx)
+           Nothing -> stringChunks $ displayException outerException
 
 outputAssertion :: Assertion -> [[Chunk]]
 outputAssertion = \case
